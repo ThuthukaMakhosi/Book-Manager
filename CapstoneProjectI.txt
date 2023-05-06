@@ -1,0 +1,179 @@
+#import sqlite3 database
+import sqlite3
+db = sqlite3.connect('ebookstore') #ebookstore database
+cursor = db.cursor()  # Get a cursor object
+
+#Creating table called books
+cursor.execute('''
+    CREATE TABLE books(id INTEGER PRIMARY KEY, Title TEXT, Author TEXT, Qty INTEGER)
+''')
+db.commit()
+cursor = db.cursor()
+
+#book data with id, Title, Author and Qty
+id5 = 3005
+Title5 = 'Alice in Wonderland'
+Author5 = 'Lewis Carroll'
+Qty5 = 12
+
+# Insert book 1
+cursor.execute('''INSERT INTO books 
+                VALUES (3001, "A Tale of Two Cities", 'Charles Dickens', 30);''')
+print('First book inserted')
+
+# Insert book 2
+cursor.execute('''INSERT INTO books 
+                 VALUES (3002, "Harry Potter and the Philosopher's Stone", 'J.K. Rowling', 40);''')
+print('Second book inserted')
+
+# Insert book 3
+cursor.execute('''INSERT INTO books 
+                  VALUES (3003, "The Lion, the Witch and the Wardrobe", 'C. S. Lewis', 25);''')
+print('Third book inserted')
+
+# Insert book 4
+cursor.execute('''INSERT INTO books 
+                    VALUES (3004, "The Lord of the Rings", 'J.R.R Tolkien', 37);''')
+print('Fourth book inserted')
+
+# Insert book 5
+cursor.execute('''INSERT INTO books 
+                 VALUES (3005, 'Alice in Wonderland', 'Lewis Carroll', 12);''')
+print('Fifth book inserted')
+
+db.commit()
+
+cursor.execute('''SELECT * FROM books''')
+new_table = cursor.fetchall()
+for new in new_table:
+    print(new)
+db.commit()
+
+cursor.execute('''SELECT id FROM books''')
+id_number = cursor.fetchall()
+identities = []
+for new in id_number:
+    numbers = str(new).strip('( ,)')
+    identities.append(int(numbers))
+
+print(identities)
+while True:
+    menu = '''
+Select one of the options below:
+1. Enter book
+2. Update book
+3. Delete book
+4. Search books
+0. Exit
+    '''
+    print(menu)
+
+    #Prompts user to enter menu option
+    option = str(input('Please enter an option(e.g. input 3 to delete book): '))
+
+    #If statement to allow user to enter new book
+    if option == '1':
+        while True:
+            try:
+                
+                cursor.execute('''SELECT id FROM books''')
+                id_number = cursor.fetchall()
+                identities = []
+                for new in id_number:
+                    numbers = str(new).strip('( ,)')
+                    identities.append(int(numbers))
+
+                id = int(input('Enter book ID: '))
+                while id in identities:
+                    print('Book already exists')
+                    id = int(input('Enter a different book ID: '))
+                break
+            except ValueError:
+                print('Invalid')
+        
+
+
+        Title =input('Enter book TITLE: ')
+        Author = input('Enter book AUTHOR: ')
+
+        while True:
+            try:
+                Qty = int(input('Enter book QUANTITY: '))
+                break
+            except ValueError:
+                print('Invalid')
+        
+        cursor.execute('''INSERT INTO books
+                  VALUES(?,?,?,?)''', (id, Title, Author, Qty))
+        cursor.execute('''SELECT * FROM books''')
+        updated_lib = cursor.fetchall()
+
+        for u in updated_lib:
+            print(u)
+        print('Book inserted')
+
+        db.commit()
+
+    elif option == '2':
+        while True:
+            try:
+                id = int(input('Enter book ID you want to update: '))
+                break
+            except ValueError:
+                print('Invalid')
+
+        Title =input('Enter new book TITLE: ')
+        Author = input('Enter new book AUTHOR: ')
+
+        while True:
+            try:
+                Qty = input('Enter new book QUANTITY: ')
+                break
+            except ValueError:
+                print('Invalid')
+
+        cursor.execute('''UPDATE books SET Title = ? WHERE id = ? ''', (Title, id))
+        cursor.execute('''UPDATE books SET Author = ? WHERE id = ? ''', (Author, id))
+        cursor.execute('''UPDATE books SET Qty = ? WHERE id = ? ''', (Qty, id))
+        cursor.execute('''SELECT * FROM books''')
+        added_book = cursor.fetchall()
+
+        for book in added_book:
+            print(book)
+        print('Book data updated!')
+        db.commit()
+    
+    elif option == '3':
+        while True:
+            try:
+                id = int(input('Enter book ID you want to delete: '))
+                break
+            except ValueError:
+                print('Invalid')
+
+        cursor.execute('''DELETE FROM books WHERE id = ? ''', (id))
+        print('Book deleted')
+
+    elif option == '4':
+        while True:
+            try:
+                id = int(input('Search book by using ID: '))
+                break
+            except ValueError:
+                print('Invalid')
+
+        cursor.execute('''SELECT id, Title, Author, Qty FROM books WHERE id=?''', (id,))
+
+    elif option == '5': 
+        db.commit()
+        db.close()
+        exit()
+  
+    else:
+        print('Invalid input. Try again!')   
+
+
+
+    
+
+
